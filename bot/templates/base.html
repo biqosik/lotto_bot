@@ -1,0 +1,33 @@
+<html>
+    <head>
+        {% load static %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Scraper_Bot</title>
+    </head>
+
+    <body>
+        <h1>Test</h1>
+        {% for scrape in name %}
+
+            <h2>{{ scrape }} should be here</h2>
+            {% if scrape.cat_1_prize == '0' or scrape.cat_1_prize == None %}
+            <h1 style="background-color: powderblue;">{{scrape.estimated_next_jackpot}} Estimated Jackpot</h1> 
+            {% else %}
+               <h1 style="background-color: rebeccapurple;"> {{scrape.cat_1_prize}}  Jackpot</h1>
+            {% endif %}
+        {% endfor %}
+
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form }}
+            <br>
+            <br>
+            {{ days }}
+            <br>
+            <br>
+            {{ interval }}
+            <input type="submit" value="Submit">
+        </form>
+    </body>
