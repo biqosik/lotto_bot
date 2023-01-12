@@ -1,1 +1,1 @@
-web: gunicorn <myproject>.wsgi –log-file -
+web: gunicorn lotto_bot.wsgi –log-file -
