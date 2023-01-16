@@ -3334,13 +3334,16 @@ class USTennesseeDailyCash(scrapy.Spider):
         self.name = "USTennesseeDailyCash"
         self.req_proxy = get_US_proxy()['http']
         print(f"RUNNING: {self.name}, {self.req_proxy}", flush=True)
-
+        
         url = "https://www.lotteryusa.com/tennessee/daily-tennessee-jackpot/"
         yield scrapy.Request(url=url, callback=self.parse, meta={"proxy": self.req_proxy, "download_timeout":10})
 
     def parse(self, response):
         jackpot = response.xpath('//div[@class="c-next-draw-card__body"]//dd[@class="c-next-draw-card__prize-value"]//text()').get()
+        draw_datetime = response.xpath('//tbody[@class="c-results-table__items"]//time[@class="c-result-card__title"]//text()').get()
+        
         LottoItem = ItemLoader(item=USTennesseeDailyCashItem(), selector=response)
+        LottoItem.add_value("draw_datetime", datetime.strptime(draw_datetime, "%A, %b %d, %Y").strftime("%Y-%m-%d"))
         LottoItem.add_value("name", self.name)
         LottoItem.add_value("estimated_next_jackpot", jackpot)
         yield LottoItem.load_item()
