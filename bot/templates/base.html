@@ -32,11 +32,12 @@
             <button type="submit" class="accept">Submit</button>
         </form>
     </div>
+
     <div class="grid_scraper">
         {% for scrape in name %}
         <div class="scraper">
             <h1>{{ scrape }} </h1>
-            <h2>Currently it's scheduled to scrape the output around: <br>{{ scrape.scheduler }} UK Time </h2>
+            <h2>Currently it's scheduled to scrape the output around: <br>{{ scrape.scheduler }} UK Time </h2>      
             <h2>{{ scrape.draw_datetime }} <----- last available lottery draw</h2>
                     {% if scrape.cat_1_prize == '0' or scrape.cat_1_prize == None %}
                     <h2>{{scrape.estimated_next_jackpot}} Estimated Jackpot</h1>
@@ -46,9 +47,19 @@
                         {% else %}
                         <h2> {{scrape.cat_1_prize}} Jackpot</h2>
                         {% endif %}
-            <h2>Lottery is rolling: {{scrape.draw_time}} </h2>
+            <h3>Lottery is rolling: {{scrape.draw_time}} </h3>
+            {% load tz %}
+
+{% timezone "Europe/London" %}
+    Paris time: {{ value }}
+{% endtimezone %}
+
+{% timezone None %}
+    Server time: {{ value }}
+{% endtimezone %}
         </div>
         {% endfor %}
+
     </div>
 
 

@@ -43,6 +43,7 @@ def get_scraper(form, get_time, interval):
     if model.ticked_option == 'True':
         slackbot(model, True)
         model.ticked_option = 'False'
+        model.scheduler = None
         model.save()
     else:
         slackbot(model, False)
@@ -81,5 +82,6 @@ def slackbot(lottery, checking):
     client = slack.WebClient(token=settings.SLACK_TOKEN)
     if checking == True:
         client.chat_postMessage(channel ='#testing_channel', text=f"Hey this lottery has been won: {lottery}")
+        client.chat_postMessage(channel ='#lotto-internal', text=f"Hey this lottery has been won: {lottery}")
     else:
         client.chat_postMessage(channel ='#testing_channel', text=f"We are still rolling for: {lottery}")

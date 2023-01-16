@@ -20,7 +20,6 @@ def start():
     try:
         scheduler = BackgroundScheduler(timezone="Europe/London")
         scheduler.add_jobstore(DjangoJobStore(), "default")
-        # run this job every 24 hours
         scraperobj = Scraper.objects.all()
         DjangoJobStore.remove_all_jobs(DjangoJobStore)
         for name in scraperobj:
