@@ -12,6 +12,7 @@
 <body>
     {% if user.is_authenticated %}
     <div class="logout">
+        <button class="logout"><a href="https://time.is/compare/">Compare Timezones</button></a>
         <button class="logout"><a href="{% url 'logout' %}"> Logout </a></button>
     </div>
     {% endif %}

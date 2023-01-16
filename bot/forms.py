@@ -19,9 +19,9 @@ class ScheduledaysForm(forms.Form):
         pick_time = forms.DateField(widget=forms.SelectDateWidget())
         hours = [tuple([x,x]) for x  in range(0,24)]
         minutes = [tuple([x,x]) for x in range(0,60)]
-        pick_starting_time_hours = forms.CharField(label = "Hour: ", widget=forms.Select(choices=hours))
-        pick_starting_time_minutes = forms.CharField(label = "Minute: ", widget=forms.Select(choices=minutes))
-        pick_starting_time_seconds = forms.CharField(label = "Second: ", widget=forms.Select(choices=minutes))
+        pick_starting_time_hours = forms.CharField(label = "Hour ", widget=forms.Select(choices=hours))
+        pick_starting_time_minutes = forms.CharField(label = "Minute ", widget=forms.Select(choices=minutes))
+        pick_starting_time_seconds = forms.CharField(label = "Second ", widget=forms.Select(choices=minutes))
     except:
         pass
 
