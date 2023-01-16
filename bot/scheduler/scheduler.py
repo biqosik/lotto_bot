@@ -17,22 +17,25 @@ def definitly_scrape(*text):
     get_scraper(text, date_append, obj.run_every)
 
 def start():
-    scheduler = BackgroundScheduler(timezone="Europe/London")
-    scheduler.add_jobstore(DjangoJobStore(), "default")
-    # run this job every 24 hours
-    scraperobj = Scraper.objects.all()
-    DjangoJobStore.remove_all_jobs(DjangoJobStore)
-    for name in scraperobj:
-        time_of_scrape = name.scheduler
-        try:
-            days = name.run_every
-            scheduler.add_job(definitly_scrape,  'interval', args=(name.name),next_run_time=time_of_scrape, days=int(days), id=name.name,name=name.name, jobstore='default')
-        except NameError:
-            print(NameError)
+    try:
+        scheduler = BackgroundScheduler(timezone="Europe/London")
+        scheduler.add_jobstore(DjangoJobStore(), "default")
+        # run this job every 24 hours
+        scraperobj = Scraper.objects.all()
+        DjangoJobStore.remove_all_jobs(DjangoJobStore)
+        for name in scraperobj:
+            time_of_scrape = name.scheduler
+            try:
+                days = name.run_every
+                scheduler.add_job(definitly_scrape,  'interval', args=(name.name),next_run_time=time_of_scrape, days=int(days), id=name.name,name=name.name, jobstore='default')
+            except NameError:
+                print(NameError)
 
-    register_events(scheduler)
-    scheduler.start()
-    print("Scheduler started...", file=sys.stdout)
+        register_events(scheduler)
+        scheduler.start()
+        print("Scheduler started...", file=sys.stdout)
+    except:
+        pass
 
 
 
