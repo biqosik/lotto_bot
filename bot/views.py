@@ -12,8 +12,25 @@ import sys
 import slack
 from datetime import datetime
 from .scheduler import scheduler
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 # Create your views here.
+
+def login_user(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.success(request, ("There was an error loggin in, Try Again!!"))
+            return redirect('login')
+    else:
+        return render(request, 'login.html', {})
 
 def get_scraper(form, get_time, interval):
     script_path = os.path.join(settings.BASE_DIR, 'manage.py')
@@ -29,7 +46,7 @@ def get_scraper(form, get_time, interval):
         model.save()
     else:
         slackbot(model, False)
-
+@login_required(login_url='login')
 def home(request):
     name = Scraper.objects.all()
     form = LottoForm()
