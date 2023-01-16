@@ -86,3 +86,13 @@ h2 {
 h3 {
   font-size: 0.7em;
 }
+
+div.login{
+  color: whitesmoke;
+  margin-top: 4rem;
+  margin-bottom: 2rem;
+  margin-left: 35%;
+  margin-right: 35%;
+  padding: 2rem;
+  text-align: center;
+}

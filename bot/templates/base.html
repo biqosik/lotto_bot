@@ -48,19 +48,7 @@
                         <h2> {{scrape.cat_1_prize}} Jackpot</h2>
                         {% endif %}
             <h3>Lottery is rolling: {{scrape.draw_time}} </h3>
-            {% load tz %}
-
-{% timezone "Europe/London" %}
-    Paris time: {{ value }}
-{% endtimezone %}
-
-{% timezone None %}
-    Server time: {{ value }}
-{% endtimezone %}
         </div>
         {% endfor %}
-
     </div>
-
-
 </body>
