@@ -5,7 +5,27 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Scraper_Bot</title>
     </head>
+{% if user.is_authenticated %}
+    <button><a href="{% url 'logout' %}"> Logout </a></button>
+{% endif %}
 
+<form method="post">
+    {% csrf_token %}
+    <br>
+    {% if user.username == 'patryk' %}
+        {{ add_lotto }}
+    {% else %}
+        {{ form }}
+    {% endif %}
+    
+    <br>
+    <br>
+    {{ days }}
+    <br>
+    <br>
+    {{ interval }}
+    <input type="submit" value="Submit">
+</form>
     <body>
         <h1>Test</h1>
         {% for scrape in name %}
@@ -19,15 +39,4 @@
         {% endfor %}
 
 
-        <form method="post">
-            {% csrf_token %}
-            {{ form }}
-            <br>
-            <br>
-            {{ days }}
-            <br>
-            <br>
-            {{ interval }}
-            <input type="submit" value="Submit">
-        </form>
     </body>

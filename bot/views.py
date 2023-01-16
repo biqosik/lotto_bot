@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Scraper
-from .forms import LottoForm, ScheduledaysForm, DaysIntervalForm
+from .forms import LottoForm, ScheduledaysForm, DaysIntervalForm, AddLotto
 from django.http import HttpResponseRedirect, HttpResponse
 import asyncio
 from django.core import management
@@ -12,7 +12,7 @@ import sys
 import slack
 from datetime import datetime
 from .scheduler import scheduler
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
@@ -46,10 +46,13 @@ def get_scraper(form, get_time, interval):
         model.save()
     else:
         slackbot(model, False)
+
+
 @login_required(login_url='login')
 def home(request):
     name = Scraper.objects.all()
     form = LottoForm()
+    add_lotto = AddLotto()
     temp_list = []
     scheduler_form = ScheduledaysForm()
     days_interval = DaysIntervalForm()
@@ -67,9 +70,12 @@ def home(request):
             return redirect('home')
         else:
             form = LottoForm()
-    context = {'name' : name, 'form' : form, 'days':scheduler_form, 'interval':days_interval}
+    context = {'name' : name, 'form' : form, 'days':scheduler_form, 'interval':days_interval, 'add_lotto':add_lotto}
     return render(request, 'base.html', context=context)
 
+def logout_user(request):
+    logout(request)
+    return redirect('login')
 
 def slackbot(lottery, checking):
     client = slack.WebClient(token=settings.SLACK_TOKEN)

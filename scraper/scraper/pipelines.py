@@ -24,7 +24,7 @@ class ScraperPipeline(object):
                 if int(a) > int(b):
                     item.save()
                     product = Scraper.objects.get(name=item['name'])
-                    item['Ticked_option'] = 'True'
+                    product.ticked_option = 'True'
                     checks_true = True
             except:
                 a = (product.estimated_next_jackpot)
@@ -37,8 +37,7 @@ class ScraperPipeline(object):
             if checks_true == True:
                 item = product.save()
             else:
-                item.save()
-            
-        except Scraper.DoesNotExist:
+                item.save()            
+        except:
             item.save()
         return item

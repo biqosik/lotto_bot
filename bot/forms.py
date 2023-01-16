@@ -8,6 +8,12 @@ class LottoForm(forms.Form):
     except:
         pass
 
+class AddLotto(forms.Form):
+    try:
+        lottery = forms.CharField(label="Add lottery", initial="add lottery")
+    except:
+        pass
+
 class ScheduledaysForm(forms.Form):
     try:
         pick_time = forms.DateField(widget=forms.SelectDateWidget())

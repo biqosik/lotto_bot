@@ -9790,55 +9790,31 @@ class NewZealandPowerball(scrapy.Spider):
         self.name = "NewZealandPowerball"
         self.req_proxy = get_UK_proxy()['http']
         print(f"RUNNING: {self.name}, {self.req_proxy}", flush=True)
-
+        headers = {
+        'authority': 'www.lotto.net',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+        # 'cookie': 'ASP.NET_SessionId=doqyx3n0nix2fzqyogeffiiu; _ga=GA1.2.1986781982.1673866307; _gid=GA1.2.761891478.1673866307; _gat=1',
+        'referer': 'https://www.lotto.net/new-zealand-powerball/results',
+        'sec-ch-ua': '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+        }
         url = "https://www.lotto.net/new-zealand-powerball/results"
-        yield scrapy.Request(url=url, callback=self.parse, meta={"proxy": self.req_proxy, "download_timeout":10})
+        yield scrapy.Request(url=url, callback=self.parse,headers=headers, meta={"proxy": self.req_proxy, "download_timeout":10})
 
     def parse(self, response):
-        self.next_jackpot = response.xpath('//div[@class="jackpot"]//span/text()').getall()[1].strip()
-        self.draw_date = response.xpath('//div[@class="date"]/span/text()').get().strip()
-        next_page = response.xpath("//div[@class='row-3']/a/@href").get()
-        url = urljoin(response.url, next_page)
-        yield scrapy.Request(url, callback=self.parse_draw, meta={"proxy": self.req_proxy, "download_timeout":10})
-
-    async def parse_draw(self, response):
         LottoItem = ItemLoader(item=NewZealandPowerballItem(), selector=response)
-        balls_lst = response.xpath('//ul[@class="balls"]/li/span/text()').getall()
-        rows = response.xpath('//table//tr')
-
+        next_jackpot = response.xpath('//div[@class="jackpot"]//span/text()').getall()[1].strip()
+        next_jackpot = prize_to_num(next_jackpot)
         LottoItem.add_value("name", self.name)
-        LottoItem.add_value("ball0", balls_lst[0])
-        LottoItem.add_value("ball1", balls_lst[1])
-        LottoItem.add_value("ball2", balls_lst[2])
-        LottoItem.add_value("ball3", balls_lst[3])
-        LottoItem.add_value("ball4", balls_lst[4])
-        LottoItem.add_value("ball5", balls_lst[5])
-        LottoItem.add_value("bonus_ball", balls_lst[6])
-        LottoItem.add_value("powerball", balls_lst[7])
-        LottoItem.add_value("draw_datetime", datetime.strptime(self.draw_date, "%d %B %Y").strftime("%Y-%m-%d"))
-        LottoItem.add_value("estimated_next_jackpot", self.next_jackpot)
-        LottoItem.add_value("cat_1_prize", rows[1].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_2_prize", rows[2].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_3_prize", rows[3].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_4_prize", rows[4].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_5_prize", rows[5].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_6_prize", rows[6].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_7_prize", '17.8') # prize is $15 + $2.8 (from Lotto); combined since all other prize categories are
-        LottoItem.add_value("cat_1_winners", rows[1].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_2_winners", rows[2].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_3_winners", rows[3].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_4_winners", rows[4].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_5_winners", rows[5].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_6_winners", rows[6].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_7_winners", rows[7].xpath('./td/text()').getall()[-1].strip())
-        try:
-            rolldown_check = rows[1].xpath('./td[@align="right"]/span/text()').getall()[-1].lower()
-            if "rolldown" in rolldown_check:
-                LottoItem.add_value("rolldown", "yes")
-            else:
-                LottoItem.add_value("rolldown", "no")
-        except:
-            LottoItem.add_value("rolldown", "no")
+        LottoItem.add_value("estimated_next_jackpot", str(next_jackpot))
         yield LottoItem.load_item()
 
 
