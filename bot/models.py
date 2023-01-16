@@ -10,6 +10,8 @@ class Scraper(models.Model):
     estimated_next_jackpot = models.CharField(max_length=255, null=True, blank=True)
     scheduler = models.DateTimeField(null=True, blank=True)
     run_every = models.CharField(max_length = 10, null=True, blank=True)
+    draw_datetime = models.CharField(null=True,blank=True, max_length=20)
+    draw_time = models.CharField(max_length=50, null=True, blank=True)
         
     def __str__(self) -> str:
         return self.name

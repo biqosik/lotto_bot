@@ -1,0 +1,84 @@
+body {
+  font-family: 'PT Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #4f5d6e;
+  position: relative;
+  background: rgb(26, 49, 95);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(26, 49, 95, 1)), color-stop(10%, rgba(26, 49, 95, 1)), color-stop(24%, rgba(29, 108, 141, 1)), color-stop(37%, rgba(41, 136, 151, 1)), color-stop(77%, rgba(39, 45, 100, 1)), color-stop(90%, rgba(26, 49, 95, 1)), color-stop(100%, rgba(26, 49, 95, 1)));
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#1a315f', endColorstr='#1a315f', GradientType=0);
+}
+
+button.accept {
+  background-color: #ed6755;
+  border: none;
+  margin-bottom: 1em;
+  margin-left: 0.5em;
+  border-radius: 5em;
+  width: 100px;
+  padding: 10px;
+  font-size: 16px;
+  color: white;
+  box-shadow: 0px 6px 18px -5px rgba(237, 103, 85, 1);
+}
+button.logout {
+  background-color: #808080;
+  border: none;
+  margin-bottom: 1em;
+  border-radius: 5em;
+  width: 200px;
+  padding: 14px;
+  font-size: 16px;
+  color: white;
+  box-shadow: 0px 6px 18px -5px rgba(237, 103, 85, 1);
+}
+div.logout{
+  width: auto;
+  display: block;
+  text-align: right;
+}
+a {
+  display: block;
+  font-size: 1em;
+  color: white;
+  text-decoration: none;
+}
+div.lotto {
+  border-radius: 12em;
+  margin-left: 30%;
+  padding: 1rem;
+  margin-right: 30%;
+  background: #5C258D;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #4389A2, #5C258D);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #4389A2, #5C258D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  box-shadow: 5px 4px 5px #000;
+  text-align: center;
+  font-size: 0.8em;
+  color: whitesmoke;
+}
+
+h1 {
+  font-size: 2em;
+
+}
+div.grid_scraper{
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
+div.scraper{
+  margin: 2em;
+  margin-left: 10%;
+  padding: 1.5rem;
+  margin-right: 10%;
+  border-radius: 3em;
+  box-shadow: 5px 4px 5px 2px #000;
+  background: #5C258D;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #4389A2, #5C258D);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #4389A2, #5C258D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  text-align: center;
+  color: azure;
+}
+h2 {
+  font-size: 1.2em;
+}

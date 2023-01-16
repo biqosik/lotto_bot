@@ -9736,9 +9736,24 @@ class NewZealandLotto(scrapy.Spider):
         self.name = "NewZealandLotto"
         self.req_proxy = get_UK_proxy()['http']
         print(f"RUNNING: {self.name}, {self.req_proxy}", flush=True)
-
+        headers = {
+        'authority': 'www.lotto.net',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+        # 'cookie': 'ASP.NET_SessionId=doqyx3n0nix2fzqyogeffiiu; _ga=GA1.2.1986781982.1673866307; _gid=GA1.2.761891478.1673866307; _gat=1',
+        'referer': 'https://www.lotto.net/new-zealand-powerball/results',
+        'sec-ch-ua': '"Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+        }
         url = "https://www.lotto.net/new-zealand-lotto/results"
-        yield scrapy.Request(url=url, callback=self.parse, meta={"proxy": self.req_proxy, "download_timeout":10})
+        yield scrapy.Request(url=url, callback=self.parse, headers=headers, meta={"proxy": self.req_proxy, "download_timeout":10})
 
     def parse(self, response):
         self.next_jackpot = response.xpath('//div[@class="jackpot"]//span/text()').getall()[1].strip()
@@ -9811,9 +9826,11 @@ class NewZealandPowerball(scrapy.Spider):
 
     def parse(self, response):
         LottoItem = ItemLoader(item=NewZealandPowerballItem(), selector=response)
+        draw_date = response.xpath('//div[@class="date"]/span/text()').get().strip()
         next_jackpot = response.xpath('//div[@class="jackpot"]//span/text()').getall()[1].strip()
         next_jackpot = prize_to_num(next_jackpot)
         LottoItem.add_value("name", self.name)
+        LottoItem.add_value("draw_datetime", datetime.strptime(draw_date, "%d %B %Y").strftime("%Y-%m-%d"))
         LottoItem.add_value("estimated_next_jackpot", str(next_jackpot))
         yield LottoItem.load_item()
 

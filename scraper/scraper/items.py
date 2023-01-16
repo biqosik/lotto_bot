@@ -4433,6 +4433,8 @@ class NewZealandPowerballItem(DjangoItem):
     django_model = Scraper
     name = Field(input_processor=MapCompose(strip_new_lines), output_processor=Join())
     estimated_next_jackpot = Field(input_processor=MapCompose(prize_to_num), output_processor=Join())
+    cat_1_prize = Field(input_processor=MapCompose(strip_new_lines, prize_to_num), output_processor=Join())
+    draw_datetime = Field(input_processor=MapCompose(), output_processor=Join())
 
 
 class NewZealandStrikeItem(DjangoItem):

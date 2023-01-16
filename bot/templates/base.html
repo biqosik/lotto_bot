@@ -1,42 +1,53 @@
 <html>
-    <head>
-        {% load static %}
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Scraper_Bot</title>
-    </head>
-{% if user.is_authenticated %}
-    <button><a href="{% url 'logout' %}"> Logout </a></button>
-{% endif %}
 
-<form method="post">
-    {% csrf_token %}
-    <br>
-    {% if user.username == 'patryk' %}
-        {{ add_lotto }}
-    {% else %}
-        {{ form }}
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Scraper_Bot</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+</head>
+
+<body>
+    {% if user.is_authenticated %}
+    <div class="logout">
+        <button class="logout"><a href="{% url 'logout' %}"> Logout </a></button>
+    </div>
     {% endif %}
-    
-    <br>
-    <br>
-    {{ days }}
-    <br>
-    <br>
-    {{ interval }}
-    <input type="submit" value="Submit">
-</form>
-    <body>
-        <h1>Test</h1>
-        {% for scrape in name %}
-
-            <h2>{{ scrape }} should be here</h2>
-            {% if scrape.cat_1_prize == '0' or scrape.cat_1_prize == None %}
-            <h1 style="background-color: powderblue;">{{scrape.estimated_next_jackpot}} Estimated Jackpot</h1> 
+    <div class="lotto">
+        <form method="post">
+            {% csrf_token %}
+            {% if user.username == 'patryk' %}
+            {{ add_lotto }}
             {% else %}
-               <h1 style="background-color: rebeccapurple;"> {{scrape.cat_1_prize}}  Jackpot</h1>
+            {{ form }}
             {% endif %}
+            <br>
+            <br>
+            {{ days }}
+            <br>
+            <br>
+            {{ interval }}
+            <button type="submit" class="accept">Submit</button>
+        </form>
+    </div>
+    <div class="grid_scraper">
+        {% for scrape in name %}
+        <div class="scraper">
+            <h1>{{ scrape }} </h1>
+            <h2>{{ scrape.draw_datetime }} <----- last available lottery draw</h2>
+                    {% if scrape.cat_1_prize == '0' or scrape.cat_1_prize == None %}
+                    <h2>{{scrape.estimated_next_jackpot}} Estimated Jackpot</h1>
+                        {% elif scrape.cat_1_prize != None and scrape.estimated_next_jackpot != None%}
+                        <h2> {{scrape.estimated_next_jackpot}} Estimated Jackpot</h2>
+                        <h2> {{scrape.cat_1_prize}} Jackpot</h2>
+                        {% else %}
+                        <h2> {{scrape.cat_1_prize}} Jackpot</h2>
+                        {% endif %}
+        </div>
         {% endfor %}
+    </div>
 
 
-    </body>
+</body>

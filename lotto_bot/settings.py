@@ -124,7 +124,9 @@ SLACK_TOKEN = 'xoxb-1335590872306-4629234880773-oXge7x2NXWrgyrp6vG92WV1R'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 STATIC_URL = 'static/'
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
