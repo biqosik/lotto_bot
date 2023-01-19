@@ -19,17 +19,17 @@ class ScraperPipeline(object):
             instance = item.save(commit=False)
             instance.pk = product.pk
             try:
-                a = (product.cat_1_prize)
-                b = (item['cat_1_prize'])
-                if int(a) > int(b):
+                a = (product.estimated_next_jackpot)
+                b = (item['estimated_next_jackpot'])
+                if float(a) > float(b):
                     item.save()
                     product = Scraper.objects.get(name=item['name'])
                     product.ticked_option = 'True'
                     checks_true = True
             except:
-                a = (product.estimated_next_jackpot)
-                b = (item['estimated_next_jackpot'])
-                if int(a) > int(b):
+                a = (product.cat_1_prize)
+                b = (item['cat_1_prize'])
+                if float(a) > float(b):
                     item.save()
                     product = Scraper.objects.get(name=item['name'])
                     product.ticked_option = 'True'

@@ -2423,9 +2423,9 @@ class USMontanaMaxCash(scrapy.Spider):
 
     def parse(self, response):
         LottoItem = ItemLoader(item=USMontanaMaxCashItem(), selector=response)
-        latest = response.json()['response']['items'][0]
+        latest = response.json()['response']['items'][1]
         try:
-            summed_jackpot = str(sum([latest['prizes'][4]['jackpot']/100.0, latest['prizes'][0]['jackpot']/100.0]))
+            estimated = response.json()['response']['items'][0]
             LottoItem.add_value("name", self.name)
             draw_date = str(latest['drawDate'])
             LottoItem.add_value("ball0", str(latest['results'][0]['number']))
@@ -2435,7 +2435,8 @@ class USMontanaMaxCash(scrapy.Spider):
             LottoItem.add_value("ball4", str(latest['results'][4]['number']))
             LottoItem.add_value("draw_datetime", datetime.strptime(draw_date, "%m.%d.%y").strftime("%Y-%m-%d"))
             LottoItem.add_value("draw_number", str(latest['drawNumber']))
-            LottoItem.add_value("estimated_next_jackpot", '0') # no estimated jackpot available
+            LottoItem.add_value("estimated_next_jackpot", str(sum([estimated['jackpotAmounts'][0]/100.0,
+                estimated['jackpotAmounts'][1]/100.0])))
             if latest['prizes'][4]['winners'] > 0:
                 cat_1 = str(latest['prizes'][4]['divident']/100.0)
             else:
@@ -2447,7 +2448,6 @@ class USMontanaMaxCash(scrapy.Spider):
             try:
                 estimated = response.json()['response']['items'][0]
                 latest = response.json()['response']['items'][1]
-                summed_jackpot = str(sum([latest['prizes'][4]['jackpot']/100.0, latest['prizes'][0]['jackpot']/100.0]))
                 LottoItem.add_value("name", self.name)
                 draw_date = str(latest['drawDate'])
                 LottoItem.add_value("ball0", str(latest['results'][0]['number']))
