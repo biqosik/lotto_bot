@@ -10,7 +10,10 @@ body {
 }
 
 button.accept {
-  background-color: #ed6755;
+  background: #232526;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #414345, #232526);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #414345, #232526); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
   border: none;
   margin-bottom: 1em;
   margin-left: 0.5em;
@@ -20,18 +23,24 @@ button.accept {
   font-size: 16px;
   color: white;
   cursor: pointer;
-  box-shadow: 0px 6px 18px -5px rgba(237, 103, 85, 1);
+  transition: 0.3s;
+}
+button.accept:hover{
+  background: blueviolet;
 }
 button.logout {
-  background-color: #808080;
+  background: #232526;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #414345, #232526);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #414345, #232526); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   border: none;
+  text-align: center;
   margin-bottom: 1em;
-  border-radius: 5em;
+  border-radius: 1em;
   width: 200px;
   padding: 14px;
   font-size: 16px;
   color: white;
-  box-shadow: 0px 6px 18px -5px rgba(237, 103, 85, 1);
+  transition: 0.3s;
 }
 div.logout{
   width: auto;
@@ -49,9 +58,10 @@ div.lotto {
   margin-left: 30%;
   padding: 1rem;
   margin-right: 30%;
-  background: #5C258D;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #4389A2, #5C258D);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #4389A2, #5C258D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #232526;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #414345, #232526);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #414345, #232526); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  
   box-shadow: 5px 4px 5px #000;
   text-align: center;
   font-size: 0.8em;
@@ -59,6 +69,7 @@ div.lotto {
 }
 
 h1 {
+  color: whitesmoke;
   font-size: 2em;
 
 }
@@ -73,9 +84,11 @@ div.scraper{
   margin-right: 10%;
   border-radius: 3em;
   box-shadow: 5px 4px 5px 2px #000;
-  background: #5C258D;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #4389A2, #5C258D);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #4389A2, #5C258D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #232526;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #414345, #232526);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #414345, #232526); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  
+  
 
   text-align: center;
   color: azure;
