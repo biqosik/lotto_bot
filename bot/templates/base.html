@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
 
 </head>
+<script type="text/javascript" src="{% static 'admin/js/calendar.js' %}"></script>
+<script type="text/javascript" src="{% static 'admin/js/admin/DateTimeShortcuts.js' %}"></script>
 
 <body>
     {% if user.is_authenticated %}
@@ -39,7 +41,7 @@
         {% for scrape in name %}
         <div class="scraper">
             <h1>{{ scrape }} </h1>
-            <h2>Currently it's scheduled to scrape the output around: <br>{{ scrape.scheduler }} UK Time </h2>      
+            <h2>Currently it's scheduled to scrape the output around: <br>{{ scrape.scheduler }} UK Time </h2>
             <h2>{{ scrape.draw_datetime }} <----- last available lottery draw</h2>
                     {% if scrape.cat_1_prize == '0' or scrape.cat_1_prize == None %}
                     <h2>{{scrape.estimated_next_jackpot}} Estimated Jackpot</h1>
@@ -49,7 +51,7 @@
                         {% else %}
                         <h2> {{scrape.cat_1_prize}} Jackpot</h2>
                         {% endif %}
-            <h3>Lottery is rolling: {{scrape.draw_time}} </h3>
+                        <h3>Lottery is rolling: {{scrape.draw_time}} </h3>
         </div>
         {% endfor %}
     </div>

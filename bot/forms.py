@@ -11,9 +11,20 @@ class LottoForm(forms.Form):
 
 class AddLotto(forms.Form):
     try:
-        lottery = forms.CharField(label="Add lottery", initial="add lottery")
+        with open('./scraper/scraper/spiders/scrapy.py', 'r', errors='ignore', encoding='utf-8') as f:
+            datafile = f.readlines()
+        scraper_lst = []
+        checks_if_working = []
+        for line in datafile:
+            if ("self.name =" in line.strip()) & ("#" not in line.strip()):
+                name = line.split('=')[1].strip().replace("'", "").replace('"', '')
+                scraper_lst.append(str(name))
+        all_choices = [tuple([x,x]) for x in scraper_lst]
+        lottery = forms.ChoiceField(choices = all_choices)
+
     except:
         pass
+    
 class DateInput(forms.DateInput):
     input_type='date'
 

@@ -15,6 +15,7 @@ from django.contrib import messages
 
 # Create your views here.
 
+
 def login_user(request):
     if request.method == "POST":
         username = request.POST['username']
@@ -24,10 +25,12 @@ def login_user(request):
             login(request, user)
             return redirect('home')
         else:
-            messages.success(request, ("There was an error loggin in, Try Again!!"))
+            messages.success(
+                request, ("There was an error loggin in, Try Again!!"))
             return redirect('login')
     else:
         return render(request, 'login.html', {})
+
 
 def get_scraper(form, get_time, interval):
     script_path = os.path.join(settings.BASE_DIR, 'manage.py')
@@ -71,17 +74,23 @@ def home(request):
             return redirect('home')
         else:
             form = LottoForm()
-    context = {'name' : name, 'form' : form, 'days':scheduler_form, 'interval':days_interval, 'add_lotto':add_lotto}
+    context = {'name': name, 'form': form, 'days': scheduler_form,
+               'interval': days_interval, 'add_lotto': add_lotto}
     return render(request, 'base.html', context=context)
+
 
 def logout_user(request):
     logout(request)
     return redirect('login')
 
+
 def slackbot(lottery, checking):
     client = slack.WebClient(token=settings.SLACK_TOKEN)
     if checking == True:
-        client.chat_postMessage(channel ='#testing_channel', text=f"Hey this lottery has been won: {lottery}")
-        client.chat_postMessage(channel ='#lotto-internal', text=f"Hey this lottery has been won: {lottery}")
+        client.chat_postMessage(
+            channel='#testing_channel', text=f"Hey this lottery has been won: {lottery}")
+        client.chat_postMessage(channel='#lotto-internal',
+                                text=f"Hey this lottery has been won: {lottery}")
     else:
-        client.chat_postMessage(channel ='#testing_channel', text=f"We are still rolling for: {lottery}")
+        client.chat_postMessage(
+            channel='#testing_channel', text=f"We are still rolling for: {lottery}")
