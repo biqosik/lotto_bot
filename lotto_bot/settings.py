@@ -117,7 +117,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-SLACK_TOKEN = 'xoxb-1335590872306-4629234880773-oXge7x2NXWrgyrp6vG92WV1R'
+SLACK_TOKEN = config('SLACK_TOKEN')
 
 
 # Static files (CSS, JavaScript, Images)

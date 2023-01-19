@@ -1,9 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Scraper
 from .forms import LottoForm, ScheduledaysForm, DaysIntervalForm, AddLotto
-from django.http import HttpResponseRedirect, HttpResponse
-import asyncio
-from django.core import management
 from subprocess import Popen, PIPE, STDOUT
 import os
 from lotto_bot import settings
@@ -35,18 +32,21 @@ def login_user(request):
 def get_scraper(form, get_time, interval):
     script_path = os.path.join(settings.BASE_DIR, 'manage.py')
     subprocess.call([sys.executable, script_path, 'crawl', form])
-    model = Scraper.objects.get(name=form)
-    model.scheduler = get_time
-    model.run_every = interval
-    model.save()
-    scheduler.start()
-    if model.ticked_option == 'True':
-        slackbot(model, True)
-        model.ticked_option = 'False'
-        model.scheduler = None
+    try:
+        model = Scraper.objects.get(name=form)
+        model.scheduler = get_time
+        model.run_every = interval
         model.save()
-    else:
-        slackbot(model, False)
+        scheduler.start()
+        if model.ticked_option == 'True':
+            slackbot(model, True)
+            model.ticked_option = 'False'
+            model.scheduler = None
+            model.save()
+        else:
+            slackbot(model, False)
+    except Scraper.DoesNotExist:
+        pass
 
 
 @login_required(login_url='login')
@@ -66,7 +66,7 @@ def home(request):
             for x in schedule.cleaned_data:
                 temp_list.append(schedule[x].value())
             temp_list = ":".join(temp_list)
-            get_time = datetime.strptime(temp_list, "%Y-%m-%d:%H:%M:%S")
+            get_time = datetime.strptime(temp_list, "%Y-%m-%d:%H:%M")
             get_scraper(form, get_time, days_interval['pick_interval'].value())
             return redirect('home')
         else:

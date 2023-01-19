@@ -1,5 +1,6 @@
 from django import forms
 from .models import Scraper
+from django.contrib.admin.widgets import AdminDateWidget
 class LottoForm(forms.Form):
     try:
         names = Scraper.objects.all()
@@ -13,15 +14,16 @@ class AddLotto(forms.Form):
         lottery = forms.CharField(label="Add lottery", initial="add lottery")
     except:
         pass
+class DateInput(forms.DateInput):
+    input_type='date'
+
+class TimeInput(forms.TimeInput):
+    input_type='time'
 
 class ScheduledaysForm(forms.Form):
     try:
-        pick_time = forms.DateField(widget=forms.SelectDateWidget())
-        hours = [tuple([x,x]) for x  in range(0,24)]
-        minutes = [tuple([x,x]) for x in range(0,60)]
-        pick_starting_time_hours = forms.CharField(label = "Hour ", widget=forms.Select(choices=hours))
-        pick_starting_time_minutes = forms.CharField(label = "Minute ", widget=forms.Select(choices=minutes))
-        pick_starting_time_seconds = forms.CharField(label = "Second ", widget=forms.Select(choices=minutes))
+        pick_time = forms.DateField(widget=DateInput)
+        pick_starting_time_hours = forms.TimeField(widget=TimeInput)
     except:
         pass
 
