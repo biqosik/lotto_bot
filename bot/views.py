@@ -87,9 +87,9 @@ def logout_user(request):
 def slackbot(lottery, checking):
     client = slack.WebClient(token=settings.SLACK_TOKEN)
     if checking == True:
-        client.chat_postMessage(
-            channel='#testing_channel', text=f"Hey this lottery has been won: {lottery}")
-        client.chat_postMessage(channel='#lotto-internal',
+         client.chat_postMessage(
+             channel='#testing_channel', text=f"Hey this lottery has been won: {lottery}")
+         client.chat_postMessage(channel='#lotto-internal',
                                 text=f"Hey this lottery has been won: {lottery}")
     else:
         client.chat_postMessage(

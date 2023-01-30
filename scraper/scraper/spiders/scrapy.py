@@ -17,6 +17,7 @@ import random
 from scraper.scraper.items import *
 from dateutil.relativedelta import relativedelta
 from urllib.parse import urljoin
+
 UK_proxy_lst = [
     '154.92.116.6:6318',    
     '64.43.91.158:6929',    
@@ -38,14 +39,12 @@ UK_proxy_lst = [
 
 US_proxy_lst = [
     '104.144.26.252:8782',
-    '104.227.101.230:6291',
     '107.152.214.94:8671', 
     '209.127.127.177:7275', 
     '107.175.119.61:6589', 
     '45.72.119.89:9165', 
     '104.144.235.181:7261', 
     '144.168.140.121:8192', 
-    '104.227.13.73:8632', 
     '45.85.160.57:7149', 
     '198.46.241.155:6690', 
     '104.144.72.32:6064', 
@@ -56,10 +55,8 @@ US_proxy_lst = [
     '69.58.9.71:7141', 
     '198.46.137.164:6368', 
     '104.227.145.172:8767', 
-    '104.227.13.50:8609', 
     '170.244.92.240:8800', 
     '45.158.185.88:8600',  
-
 ]
 
 AUS_proxy_lst = [
@@ -2338,70 +2335,8 @@ class USMontanaCash(scrapy.Spider):
 
     def parse(self, response):
         LottoItem = ItemLoader(item=USMontanaCashItem(), selector=response)
-        latest = response.json()['response']['items'][0]
-        try:
-            response_test = str(sum([latest['prizes'][4]['jackpot']/100.0, latest['prizes'][0]['jackpot']/100.0]))
-            LottoItem.add_value("name", self.name)
-            draw_date = str(latest['drawDate'])
-            LottoItem.add_value("ball0", str(latest['results'][0]['number']))
-            LottoItem.add_value("ball1", str(latest['results'][1]['number']))
-            LottoItem.add_value("ball2", str(latest['results'][2]['number']))
-            LottoItem.add_value("ball3", str(latest['results'][3]['number']))
-            LottoItem.add_value("ball4", str(latest['results'][4]['number']))
-            LottoItem.add_value("draw_datetime", datetime.strptime(draw_date, "%m.%d.%y").strftime("%Y-%m-%d"))
-            LottoItem.add_value("draw_number", str(latest['drawNumber']))
-            LottoItem.add_value("estimated_next_jackpot", '0') # no estimated jackpot available
-            if latest['prizes'][0]['winners'] > 0:
-                cat_1 = str(latest['prizes'][0]['divident']/100.0)
-            else:
-                cat_1 = str(latest['prizes'][0]['jackpot']/100.0)
-            LottoItem.add_value("cat_1_prize", cat_1)
-            LottoItem.add_value("cat_2_prize", str(latest['prizes'][1]['divident']/100))
-            LottoItem.add_value("cat_3_prize", str(latest['prizes'][2]['divident']/100))
-            LottoItem.add_value("cat_4_prize", str(latest['prizes'][3]['divident']/100))
-            LottoItem.add_value("cat_1_winners", str(latest['prizes'][0]['winners']))
-            LottoItem.add_value("cat_2_winners", str(latest['prizes'][1]['winners']))
-            LottoItem.add_value("cat_3_winners", str(latest['prizes'][2]['winners']))
-            LottoItem.add_value("cat_4_winners", str(latest['prizes'][3]['winners']))
-            yield LottoItem.load_item()
-        except:
-            try:
-                estimated = response.json()['response']['items'][0]
-                latest = response.json()['response']['items'][1]
-                response_test = str(sum([latest['prizes'][4]['jackpot']/100.0, latest['prizes'][0]['jackpot']/100.0]))
-                LottoItem.add_value("name", self.name)
-                draw_date = str(latest['drawDate'])
-                LottoItem.add_value("ball0", str(latest['results'][0]['number']))
-                LottoItem.add_value("ball1", str(latest['results'][1]['number']))
-                LottoItem.add_value("ball2", str(latest['results'][2]['number']))
-                LottoItem.add_value("ball3", str(latest['results'][3]['number']))
-                LottoItem.add_value("ball4", str(latest['results'][4]['number']))
-                LottoItem.add_value("draw_datetime", datetime.strptime(draw_date, "%m.%d.%y").strftime("%Y-%m-%d"))
-                LottoItem.add_value("draw_number", str(latest['drawNumber']))
-                LottoItem.add_value("estimated_next_jackpot", str(estimated['jackpotAmounts'][0]/100.0))
-                if latest['prizes'][0]['winners'] > 0:
-                    cat_1 = str(latest['prizes'][0]['divident']/100.0)
-                else:
-                    cat_1 = str(latest['prizes'][0]['jackpot']/100.0)
-                LottoItem.add_value("cat_1_prize", cat_1)
-                LottoItem.add_value("cat_2_prize", str(latest['prizes'][1]['divident']/100))
-                LottoItem.add_value("cat_3_prize", str(latest['prizes'][2]['divident']/100))
-                LottoItem.add_value("cat_4_prize", str(latest['prizes'][3]['divident']/100))
-                LottoItem.add_value("cat_1_winners", str(latest['prizes'][0]['winners']))
-                LottoItem.add_value("cat_2_winners", str(latest['prizes'][1]['winners']))
-                LottoItem.add_value("cat_3_winners", str(latest['prizes'][2]['winners']))
-                LottoItem.add_value("cat_4_winners", str(latest['prizes'][3]['winners']))
-                yield LottoItem.load_item()
-            except:
-                self.frmdata['currentPage'] = 2
-                yield scrapy.Request(url=self.url, method='POST', headers=self.headers, body=json.dumps(self.frmdata),
-                    callback=self.parse_draw, meta={"proxy": self.req_proxy, "download_timeout":10})
-
-    async def parse_draw(self, response):
-        LottoItem = ItemLoader(item=USMontanaMaxCashItem(), selector=response)
-        latest = response.json()['response']['items'][0]
-
-        response_test = str(sum([latest['prizes'][4]['jackpot']/100.0, latest['prizes'][0]['jackpot']/100.0]))
+        estimated = response.json()['response']['items'][0]
+        latest = response.json()['response']['items'][1]
         LottoItem.add_value("name", self.name)
         draw_date = str(latest['drawDate'])
         LottoItem.add_value("ball0", str(latest['results'][0]['number']))
@@ -2411,7 +2346,7 @@ class USMontanaCash(scrapy.Spider):
         LottoItem.add_value("ball4", str(latest['results'][4]['number']))
         LottoItem.add_value("draw_datetime", datetime.strptime(draw_date, "%m.%d.%y").strftime("%Y-%m-%d"))
         LottoItem.add_value("draw_number", str(latest['drawNumber']))
-        LottoItem.add_value("estimated_next_jackpot", '0') # no estimated jackpot available
+        LottoItem.add_value("estimated_next_jackpot", str(estimated['jackpotAmounts'][0]/100.0))
         if latest['prizes'][0]['winners'] > 0:
             cat_1 = str(latest['prizes'][0]['divident']/100.0)
         else:
@@ -2425,6 +2360,8 @@ class USMontanaCash(scrapy.Spider):
         LottoItem.add_value("cat_3_winners", str(latest['prizes'][2]['winners']))
         LottoItem.add_value("cat_4_winners", str(latest['prizes'][3]['winners']))
         yield LottoItem.load_item()
+                
+
 
 
 class USMontanaMaxCash(scrapy.Spider):
@@ -2468,59 +2405,7 @@ class USMontanaMaxCash(scrapy.Spider):
 
     def parse(self, response):
         LottoItem = ItemLoader(item=USMontanaMaxCashItem(), selector=response)
-        latest = response.json()['response']['items'][1]
-        try:
-            estimated = response.json()['response']['items'][0]
-            LottoItem.add_value("name", self.name)
-            draw_date = str(latest['drawDate'])
-            LottoItem.add_value("ball0", str(latest['results'][0]['number']))
-            LottoItem.add_value("ball1", str(latest['results'][1]['number']))
-            LottoItem.add_value("ball2", str(latest['results'][2]['number']))
-            LottoItem.add_value("ball3", str(latest['results'][3]['number']))
-            LottoItem.add_value("ball4", str(latest['results'][4]['number']))
-            LottoItem.add_value("draw_datetime", datetime.strptime(draw_date, "%m.%d.%y").strftime("%Y-%m-%d"))
-            LottoItem.add_value("draw_number", str(latest['drawNumber']))
-            LottoItem.add_value("estimated_next_jackpot", str(sum([estimated['jackpotAmounts'][0]/100.0,
-                estimated['jackpotAmounts'][1]/100.0])))
-            if latest['prizes'][4]['winners'] > 0:
-                cat_1 = str(latest['prizes'][4]['divident']/100.0)
-            else:
-                cat_1 = str(latest['prizes'][4]['jackpot']/100.0)
-            LottoItem.add_value("cat_1_prize", cat_1)
-            LottoItem.add_value("cat_1_winners", str(latest['prizes'][4]['winners']))
-            yield LottoItem.load_item()
-        except:
-            try:
-                estimated = response.json()['response']['items'][0]
-                latest = response.json()['response']['items'][1]
-                LottoItem.add_value("name", self.name)
-                draw_date = str(latest['drawDate'])
-                LottoItem.add_value("ball0", str(latest['results'][0]['number']))
-                LottoItem.add_value("ball1", str(latest['results'][1]['number']))
-                LottoItem.add_value("ball2", str(latest['results'][2]['number']))
-                LottoItem.add_value("ball3", str(latest['results'][3]['number']))
-                LottoItem.add_value("ball4", str(latest['results'][4]['number']))
-                LottoItem.add_value("draw_datetime", datetime.strptime(draw_date, "%m.%d.%y").strftime("%Y-%m-%d"))
-                LottoItem.add_value("draw_number", str(latest['drawNumber']))
-                LottoItem.add_value("estimated_next_jackpot", str(sum([estimated['jackpotAmounts'][0]/100.0,
-                    estimated['jackpotAmounts'][1]/100.0])))
-                if latest['prizes'][4]['winners'] > 0:
-                    cat_1 = str(latest['prizes'][4]['divident']/100.0)
-                else:
-                    cat_1 = str(latest['prizes'][4]['jackpot']/100.0)
-                LottoItem.add_value("cat_1_prize", cat_1)
-                LottoItem.add_value("cat_1_winners", str(latest['prizes'][4]['winners']))
-                yield LottoItem.load_item()
-            except:
-                self.frmdata['currentPage'] = 2
-                yield scrapy.Request(url=self.url, method='POST', headers=self.headers, body=json.dumps(self.frmdata),
-                    callback=self.parse_draw, meta={"proxy": self.req_proxy, "download_timeout":10})
-
-    async def parse_draw(self, response):
-        LottoItem = ItemLoader(item=USMontanaMaxCashItem(), selector=response)
         latest = response.json()['response']['items'][0]
-
-        summed_jackpot = str(sum([latest['prizes'][4]['jackpot']/100.0, latest['prizes'][0]['jackpot']/100.0]))
         LottoItem.add_value("name", self.name)
         draw_date = str(latest['drawDate'])
         LottoItem.add_value("ball0", str(latest['results'][0]['number']))
@@ -2530,15 +2415,15 @@ class USMontanaMaxCash(scrapy.Spider):
         LottoItem.add_value("ball4", str(latest['results'][4]['number']))
         LottoItem.add_value("draw_datetime", datetime.strptime(draw_date, "%m.%d.%y").strftime("%Y-%m-%d"))
         LottoItem.add_value("draw_number", str(latest['drawNumber']))
-        LottoItem.add_value("estimated_next_jackpot", '0') # no estimated jackpot available
+        LottoItem.add_value("estimated_next_jackpot", str(sum([latest['jackpotAmounts'][0]/100.0,
+            latest['jackpotAmounts'][1]/100.0])))
         if latest['prizes'][4]['winners'] > 0:
             cat_1 = str(latest['prizes'][4]['divident']/100.0)
         else:
-            cat_1 = str(latest['prizes'][4]['jackpot']/100.0)
+            cat_1 = str(latest['jackpotAmounts'][0]/100.0)
         LottoItem.add_value("cat_1_prize", cat_1)
         LottoItem.add_value("cat_1_winners", str(latest['prizes'][4]['winners']))
         yield LottoItem.load_item()
-
 
 class USNebraskaPick5(scrapy.Spider):
 
@@ -3359,10 +3244,12 @@ class USTennesseeCash(scrapy.Spider):
 
     def parse(self, response):
         jackpot = response.xpath('//div[@class="c-next-draw-card__body"]//dd[@class="c-next-draw-card__prize-value"]//text()').get()
+        draw_datetime = response.xpath('//tbody[@class="c-results-table__items"]//time[@class="c-result-card__title"]//text()').get()
         LottoItem = ItemLoader(item=USTennesseeCashItem(), selector=response)
 
         LottoItem.add_value("name", self.name)
         LottoItem.add_value("estimated_next_jackpot", jackpot)
+        LottoItem.add_value("draw_datetime", datetime.strptime(draw_datetime, "%A, %b %d, %Y").strftime("%Y-%m-%d"))
         yield LottoItem.load_item()
 
 class USTennesseeDailyCash(scrapy.Spider):
@@ -12290,95 +12177,17 @@ class SwedenLotto1(scrapy.Spider):
         self.req_proxy = get_UK_proxy()['http']
         print(f"RUNNING: {self.name}, {self.req_proxy}", flush=True)
 
-        url = "https://viking-lotto.net/en/sweden-lotto"
+        url = "https://lotteryguru.com/sweden-lottery-results"
         yield scrapy.Request(url=url, callback=self.parse, meta={"proxy": self.req_proxy, "download_timeout":10})
 
     def parse(self, response):
-        self.next_jackpot = response.xpath('//div[@class="_amount"]/text()').get()
-        if "kr." in self.next_jackpot:
-            self.next_jackpot = self.next_jackpot.replace("kr.", "")
-
-        headers = {
-            'authority': 'api.www.svenskaspel.se',
-            'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="90", "Google Chrome";v="90"',
-            'accept': 'application/json, text/javascript, */*; q=0.01',
-            'sec-ch-ua-mobile': '?0',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36',
-            'content-type': 'text/plain',
-            'origin': 'https://www.svenskaspel.se',
-            'sec-fetch-site': 'same-site',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-dest': 'empty',
-            'referer': 'https://www.svenskaspel.se/',
-            'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
-            'cookie': 'devid=c971eb83-6924-46b8-90b4-c139c330804e; _ga=GA1.2.1204281379.1610617826; AMCVS_88743E6A5A74B5900A495D61%40AdobeOrg=1; s_cc=true; adobeujs-optin=%7B%22aam%22%3Afalse%2C%22adcloud%22%3Afalse%2C%22aa%22%3Atrue%2C%22campaign%22%3Afalse%2C%22ecid%22%3Atrue%2C%22livefyre%22%3Afalse%2C%22target%22%3Afalse%2C%22mediaaa%22%3Afalse%7D; AMCV_88743E6A5A74B5900A495D61%40AdobeOrg=-637568504%7CMCIDTS%7C18647%7CMCMID%7C01531841484907949164140167357533082406%7CMCAAMLH-1611676140%7C6%7CMCAAMB-1611676140%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1611078540s%7CNONE%7CvVersion%7C5.1.1; _gid=GA1.2.89385455.1619707838; AMCV_88743E6A5A74B5900A495D61%40AdobeOrg=-637568504%7CMCIDTS%7C18747%7CMCMID%7C01531841484907949164140167357533082406%7CMCAAMLH-1620315573%7C6%7CMCAAMB-1620315573%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1619717973s%7CNONE%7CvVersion%7C5.1.1; gpv=lotto%3Aresultat%3A2021-04-21',
-        }
-        sat_lotto_id, sat_joker_id, sat_date = 2120, 1911, "2021-04-24"
-        wed_lotto_id, wed_joker_id, wed_date = 2122, 937, "2021-04-28"
-
-        weekday_decimal = int(datetime.now().strftime("%w"))
-        if weekday_decimal in [0, 1, 2, 3]: # Sunday, Monday, Tuesday, Wednesday
-            # use saturday url since draw is in evening
-            num_days_difference = (datetime.now() - datetime.strptime(sat_date, "%Y-%m-%d")).days
-            num_weeks_difference = math.floor(num_days_difference/7)
-            new_lotto_id = sat_lotto_id + num_weeks_difference
-            new_joker_id = sat_joker_id + num_weeks_difference
-            url = f'https://api.www.svenskaspel.se/multifetch?urls=/draw/lottosaturday/draws/{new_lotto_id}/result|draw/jokersaturday/draws/{new_joker_id}/result'
-        elif weekday_decimal in [4, 5, 6]: # Thursday, Friday, Saturday
-            # wednesday url
-            num_days_difference = (datetime.now() - datetime.strptime(wed_date, "%Y-%m-%d")).days
-            num_weeks_difference = math.floor(num_days_difference/7)
-            new_lotto_id = wed_lotto_id + num_weeks_difference
-            new_joker_id = wed_joker_id + num_weeks_difference
-            url = f'https://api.www.svenskaspel.se/multifetch?urls=/draw/lottowednesday/draws/{new_lotto_id}/result|draw/jokerwednesday/draws/{new_joker_id}/result'
-
-        yield scrapy.Request(url=url, callback=self.parse_draw, meta={"proxy": self.req_proxy, "download_timeout":10})
-
-    async def parse_draw(self, response):
         LottoItem = ItemLoader(item=SwedenLotto1Item(), selector=response)
-        latest = response.json()['responses'][0]['result']
-        balls_lst = latest['drawResult'][0]['drawNumbers'][0]['numbers']
-        bonus_balls_lst = latest['drawResult'][0]['drawNumbers'][1]['numbers']
-        rows = latest['distribution'][0]['distribution']
-
+        next_jackpot = response.xpath('//div[@class="lg-card lg-link"]')
+        draw_datetime = next_jackpot[1].xpath('.//div[@class="lg-card-row"]//span[@class="lg-date"]//text()').get()
+        next_jackpot = next_jackpot[1].xpath('.//div[@class="lg-card-row lg-jackpot-info"]//div[@class="lg-sum"]//text()').get()
         LottoItem.add_value("name", self.name)
-        LottoItem.add_value("ball0", str(balls_lst[0]))
-        LottoItem.add_value("ball1", str(balls_lst[1]))
-        LottoItem.add_value("ball2", str(balls_lst[2]))
-        LottoItem.add_value("ball3", str(balls_lst[3]))
-        LottoItem.add_value("ball4", str(balls_lst[4]))
-        LottoItem.add_value("ball5", str(balls_lst[5]))
-        LottoItem.add_value("ball6", str(balls_lst[6]))
-        LottoItem.add_value("bonus_ball0", str(bonus_balls_lst[0]))
-        LottoItem.add_value("bonus_ball1", str(bonus_balls_lst[1]))
-        LottoItem.add_value("bonus_ball2", str(bonus_balls_lst[2]))
-        LottoItem.add_value("bonus_ball3", str(bonus_balls_lst[3]))
-        LottoItem.add_value("draw_datetime", latest['regCloseTime'].split('T')[0])
-        LottoItem.add_value("combined_sales", latest['currentNetSale'])
-        LottoItem.add_value("estimated_next_jackpot", self.next_jackpot)
-        if "mvinsten" in rows[5]['name']:
-            LottoItem.add_value("cat_1_prize", str(rows[0]['amount']))
-            LottoItem.add_value("cat_2_prize", str(rows[1]['amount']))
-            LottoItem.add_value("cat_3_prize", str(rows[2]['amount']))
-            LottoItem.add_value("cat_4_prize", str(rows[3]['amount']))
-            LottoItem.add_value("cat_5_prize", str(rows[4]['amount']))
-            LottoItem.add_value("cat_1_winners", str(rows[0]['winners']))
-            LottoItem.add_value("cat_2_winners", str(rows[1]['winners']))
-            LottoItem.add_value("cat_3_winners", str(rows[2]['winners']))
-            LottoItem.add_value("cat_4_winners", str(rows[3]['winners']))
-            LottoItem.add_value("cat_5_winners", str(rows[4]['winners']))
-        elif "mvinsten" in rows[0]['name']:
-            # In the case match_dream has been won and order is rearranged
-            LottoItem.add_value("cat_1_prize", str(rows[1]['amount']))
-            LottoItem.add_value("cat_2_prize", str(rows[2]['amount']))
-            LottoItem.add_value("cat_3_prize", str(rows[3]['amount']))
-            LottoItem.add_value("cat_4_prize", str(rows[4]['amount']))
-            LottoItem.add_value("cat_5_prize", str(rows[5]['amount']))
-            LottoItem.add_value("cat_1_winners", str(rows[1]['winners']))
-            LottoItem.add_value("cat_2_winners", str(rows[2]['winners']))
-            LottoItem.add_value("cat_3_winners", str(rows[3]['winners']))
-            LottoItem.add_value("cat_4_winners", str(rows[4]['winners']))
-            LottoItem.add_value("cat_5_winners", str(rows[5]['winners']))
+        LottoItem.add_value("estimated_next_jackpot", next_jackpot)
+        LottoItem.add_value("draw_datetime",  datetime.strptime(draw_datetime, "%d %b %Y").strftime("%Y-%m-%d"))
         yield LottoItem.load_item()
 
 
