@@ -40,7 +40,6 @@ def get_scraper(form, get_time, interval):
         model.scheduler = get_time
         model.run_every = interval
         model.save()
-        scheduler.start()
         if model.ticked_option == 'True':
             slackbot(model, True)
             model.ticked_option = 'False'
@@ -48,6 +47,7 @@ def get_scraper(form, get_time, interval):
             model.save()
         else:
             slackbot(model, False)
+        scheduler.start()
     except Scraper.DoesNotExist:
         pass
 
