@@ -2601,7 +2601,7 @@ class USNewYorkLotto(scrapy.Spider):
         self.req_proxy = get_US_proxy()['http']
         print(f"RUNNING: {self.name}, {self.req_proxy}", flush=True)
 
-        url = "https://nylottery.ny.gov/drupal-api/api/winning_numbers?_format=json&nid=26&page=0"
+        url = "https://nylottery.ny.gov/drupal-api/api/v2/winning_numbers?_format=json&nid=26&page=0"
         yield scrapy.Request(url=url, callback=self.parse, meta={"proxy": self.req_proxy, "download_timeout":10})
 
     def parse(self, response):
@@ -3718,44 +3718,17 @@ class USWyomingCowboyDraw(scrapy.Spider):
 
     def start_requests(self):
         self.name = "USWyomingCowboyDraw"
-        self.req_proxy = get_US_proxy()['http']
-        print(f"RUNNING: {self.name}, {self.req_proxy}", flush=True)
-
-        #url = "https://www.lotteryusa.com/wyoming/cowboy-draw/"
-        #yield scrapy.Request(url=url, callback=self.parse_next_estimated, meta={"proxy": self.req_proxy, "download_timeout":10})
-
-    #def parse_next_estimated(self, response):
-        #self.next_jackpot = response.xpath('//dd[@class="c-next-draw-card__prize-value"]/text()').get().strip()
-        url = "https://www.lottery.net/wyoming/cowboy-draw/numbers"
+        self.req_proxy = get_UK_proxy()['http']
+        url = "https://www.lotteryusa.com/wyoming/"
         yield scrapy.Request(url=url, callback=self.parse, meta={"proxy": self.req_proxy, "download_timeout":10})
 
     def parse(self, response):
-        next_page = [i for i in response.xpath('//div[@class="inner"]//div/a/@href').getall() if "cowboy-draw/numbers" in i][0]
-        url = urljoin(response.url, next_page)
-        yield scrapy.Request(url=url, callback=self.parse_draw, meta={"proxy": self.req_proxy, "download_timeout":10})
-
-    async def parse_draw(self, response):
         LottoItem = ItemLoader(item=USWyomingCowboyDrawItem(), selector=response)
-        balls_lst = response.xpath('//ul/li[@class="ball"]/text()').getall()
-        rows = response.xpath('//tbody/tr')
+        x = response.xpath('//td[@class="c-result-card__next-draw "]//dd[@class="c-result-card__prize-value"]//text()').get()
 
         LottoItem.add_value("name", self.name)
-        LottoItem.add_value("ball0", balls_lst[0])
-        LottoItem.add_value("ball1", balls_lst[1])
-        LottoItem.add_value("ball2", balls_lst[2])
-        LottoItem.add_value("ball3", balls_lst[3])
-        LottoItem.add_value("ball4", balls_lst[4])
-        date_str = response.url.split('/')[-1]
-        LottoItem.add_value("draw_datetime", datetime.strptime(date_str, "%m-%d-%Y").strftime("%Y-%m-%d"))
         #LottoItem.add_value("estimated_next_jackpot", self.next_jackpot)
-        LottoItem.add_value("cat_1_prize", rows[0].xpath('./td/text()').getall()[1])
-        LottoItem.add_value("cat_2_prize", rows[1].xpath('./td/text()').getall()[1])
-        LottoItem.add_value("cat_3_prize", rows[2].xpath('./td/text()').getall()[1])
-        LottoItem.add_value("cat_4_prize", rows[3].xpath('./td/text()').getall()[1])
-        LottoItem.add_value("cat_1_winners", rows[0].xpath('./td/text()').getall()[2])
-        LottoItem.add_value("cat_2_winners", rows[1].xpath('./td/text()').getall()[2])
-        LottoItem.add_value("cat_3_winners", rows[2].xpath('./td/text()').getall()[2])
-        LottoItem.add_value("cat_4_winners", rows[3].xpath('./td/text()').getall()[2])
+        LottoItem.add_value("cat_1_prize", x)
         yield LottoItem.load_item()
 
 
@@ -4533,65 +4506,17 @@ class AustriaLotto(scrapy.Spider):
         self.req_proxy = get_UK_proxy()['http']
         print(f"RUNNING: {self.name}, {self.req_proxy}", flush=True)
 
-        url = "https://www.win2day.at/lotterie/lotto?apID=LOAT&seglo=true&oID=2"
-        yield scrapy.Request(url=url, callback=self.parse,
-            meta={'playwright': True, "playwright_context": "new",
-                "playwright_context_kwargs": {
-                    "java_script_enabled": True,
-                    "ignore_https_errors": True,
-                    "proxy": {
-                        "server": self.req_proxy,
-                        "username": "keizzermop",
-                        "password": "WSPassword123",
-                    },
-                },
-            })
+        url = "https://lotteryguru.com/austria-lottery-results"
+        yield scrapy.Request(url=url, callback=self.parse, meta={"proxy": self.req_proxy, "download_timeout":10})
 
     def parse(self, response):
         LottoItem = ItemLoader(item=AustriaLottoItem(), selector=response)
-        latest = response.xpath('//div[@class="accordion-body"]')[0]
-        balls_lst = latest.xpath(
-            './/div[@class="win-numbers"]/div[@class="draw-numbers ball-wrapper"]/span[@class="ball"]/strong[@class="num"]/text()').getall()
-        bonus_ball = latest.xpath(
-            './/div[@class="win-numbers"]/div[@class="draw-numbers ball-wrapper"]/span[@class="zz-wrapper"]/span[@class="ball"]/strong[@class="num"]/text()').get()
-        rows = latest.xpath('.//table[@class="drawresult-table"]/tbody/tr')
-        datetime_info = response.xpath('//div[@class="accordion"]//h3//span/text()').getall()
-        draw_date = [i for i in datetime_info if any(string in i for string in ['.20'])]
-        draw_date = draw_date[0].split(',')[1].strip()
-
+        rows = response.xpath('//div[@class="lg-card lg-link"]')
+        draw_date = rows[1].xpath('.//div[@class="lg-card-row"]//div[@class="lg-time"]//span[@class="lg-date"]//text()').get()
+        jackpot = rows[1].xpath('.//div[@class="lg-card-row lg-jackpot-info"]//div[@class="lg-sum"]//text()').get()
         LottoItem.add_value("name", self.name)
-        LottoItem.add_value("ball0", balls_lst[0])
-        LottoItem.add_value("ball1", balls_lst[1])
-        LottoItem.add_value("ball2", balls_lst[2])
-        LottoItem.add_value("ball3", balls_lst[3])
-        LottoItem.add_value("ball4", balls_lst[4])
-        LottoItem.add_value("ball5", balls_lst[5])
-        LottoItem.add_value("bonus_ball", bonus_ball)
-        LottoItem.add_value("draw_datetime", datetime.strptime(draw_date, "%d.%m.%Y").strftime("%Y-%m-%d"))
-        LottoItem.add_value("cat_1_prize", rows[1].xpath('./td[@class="drawresult-td-right strong"]/text()').get())
-        LottoItem.add_value("cat_2_prize", rows[2].xpath('./td[@class="drawresult-td-right strong"]/text()').get())
-        LottoItem.add_value("cat_3_prize", rows[3].xpath('./td[@class="drawresult-td-right strong"]/text()').get())
-        LottoItem.add_value("cat_4_prize", rows[4].xpath('./td[@class="drawresult-td-right strong"]/text()').get())
-        LottoItem.add_value("cat_5_prize", rows[5].xpath('./td[@class="drawresult-td-right strong"]/text()').get())
-        LottoItem.add_value("cat_6_prize", rows[6].xpath('./td[@class="drawresult-td-right strong"]/text()').get())
-        LottoItem.add_value("cat_7_prize", rows[7].xpath('./td[@class="drawresult-td-right strong"]/text()').get())
-        LottoItem.add_value("cat_8_prize", rows[8].xpath('./td[@class="drawresult-td-right strong"]/text()').get())
-        match_6_lst = rows[1].xpath('./td[@class="drawresult-td-left strong"]//text()').getall()
-        if "jackpot" in "".join(match_6_lst).lower():
-            LottoItem.add_value("cat_1_winners", '0')
-        else:
-            LottoItem.add_value("cat_1_winners", match_6_lst[-1])
-        match_5_lst = rows[2].xpath('./td[@class="drawresult-td-left strong"]//text()').getall()
-        if "jackpot" in "".join(match_5_lst).lower():
-            LottoItem.add_value("cat_2_winners", '0')
-        else:
-            LottoItem.add_value("cat_2_winners", match_5_lst[-1])
-        LottoItem.add_value("cat_3_winners", rows[3].xpath('./td[@class="drawresult-td-left strong"]/text()').get())
-        LottoItem.add_value("cat_4_winners", rows[4].xpath('./td[@class="drawresult-td-left strong"]/text()').get())
-        LottoItem.add_value("cat_5_winners", rows[5].xpath('./td[@class="drawresult-td-left strong"]/text()').get())
-        LottoItem.add_value("cat_6_winners", rows[6].xpath('./td[@class="drawresult-td-left strong"]/text()').get())
-        LottoItem.add_value("cat_7_winners", rows[7].xpath('./td[@class="drawresult-td-left strong"]/text()').get())
-        LottoItem.add_value("cat_8_winners", rows[8].xpath('./td[@class="drawresult-td-left strong"]/text()').get())
+        LottoItem.add_value("draw_datetime", datetime.strptime(draw_date, "%d %b %Y").strftime("%Y-%m-%d"))
+        LottoItem.add_value("cat_1_prize", jackpot)
         yield LottoItem.load_item()
 
 

@@ -1654,22 +1654,8 @@ class USWyomingCowboyDrawItem(DjangoItem):
     django_model = Scraper
     name = Field(input_processor=MapCompose(strip_new_lines), output_processor=Join())
 
-    draw_datetime = Field(input_processor=MapCompose(), output_processor=Join())
-    ball0 = Field(input_processor=MapCompose(strip_new_lines), output_processor=Join())
-    ball1 = Field(input_processor=MapCompose(strip_new_lines), output_processor=Join())
-    ball2 = Field(input_processor=MapCompose(strip_new_lines), output_processor=Join())
-    ball3 = Field(input_processor=MapCompose(strip_new_lines), output_processor=Join())
-    ball4 = Field(input_processor=MapCompose(strip_new_lines), output_processor=Join())
-    estimated_next_jackpot = Field(input_processor=MapCompose(strip_new_lines, prize_to_num), output_processor=Join())
+    
     cat_1_prize = Field(input_processor=MapCompose(strip_new_lines, prize_to_num), output_processor=Join())
-    cat_2_prize = Field(input_processor=MapCompose(strip_new_lines, prize_to_num), output_processor=Join())
-    cat_3_prize = Field(input_processor=MapCompose(strip_new_lines, prize_to_num), output_processor=Join())
-    cat_4_prize = Field(input_processor=MapCompose(strip_new_lines, prize_to_num), output_processor=Join())
-    cat_1_winners = Field(input_processor=MapCompose(strip_new_lines, strip_symbols), output_processor=Join())
-    cat_2_winners = Field(input_processor=MapCompose(strip_new_lines, strip_symbols), output_processor=Join())
-    cat_3_winners = Field(input_processor=MapCompose(strip_new_lines, strip_symbols), output_processor=Join())
-    cat_4_winners = Field(input_processor=MapCompose(strip_new_lines, strip_symbols), output_processor=Join())
-
 
 ### REST OF THE WORLD
 

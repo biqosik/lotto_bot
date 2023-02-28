@@ -21,20 +21,29 @@ def start():
         scheduler = BackgroundScheduler(timezone="Europe/London")
         scheduler.add_jobstore(DjangoJobStore(), "default")
         scraperobj = Scraper.objects.all()
-        DjangoJobStore.remove_all_jobs(DjangoJobStore)
         for name in scraperobj:
-            time_of_scrape = name.scheduler
             try:
-                days = name.run_every
-                scheduler.add_job(definitly_scrape,  'interval', args=(name.name),next_run_time=time_of_scrape, days=int(days), id=name.name,name=name.name, jobstore='default')
-            except NameError:
-                print(NameError)
-
-        register_events(scheduler)
+                temp_name = DjangoJobStore().lookup_job(name.name)
+                time_of_scrape = name.scheduler
+                get_only_name = str(temp_name).split()
+                if None == temp_name and time_of_scrape != None:
+                    try:
+                        days = name.run_every
+                        scheduler.add_job(definitly_scrape,  'interval', args=(name.name),next_run_time=time_of_scrape, days=int(days), id=name.name,name=name.name, jobstore='default')
+                    except NameError:
+                        print(NameError)
+                elif 'paused' in str(temp_name) and time_of_scrape != None:
+                    days = name.run_every
+                    scheduler.add_job(definitly_scrape,  'interval', args=(name.name),next_run_time=time_of_scrape, days=int(days), id=name.name,name=name.name, jobstore='default')
+                elif 'paused' not in str(temp_name) and time_of_scrape == None and temp_name != None:
+                    days = name.run_every
+                    DjangoJobStore().remove_job(get_only_name[0])
+            except Exception as e:
+                print(e)
         scheduler.start()
         print("Scheduler started...", file=sys.stdout)
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
 
 
