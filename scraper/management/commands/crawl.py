@@ -3,7 +3,6 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.settings import Settings
 
 from scraper.scraper import settings as my_settings
-from scraper.scraper.spiders.scrapy import CanadaMaxLotto
 import sys
 
 class Command(BaseCommand):
