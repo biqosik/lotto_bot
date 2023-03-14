@@ -4505,8 +4505,8 @@ class AustriaLotto(scrapy.Spider):
         self.name = "AustriaLotto"
         self.req_proxy = get_UK_proxy()['http']
         print(f"RUNNING: {self.name}, {self.req_proxy}", flush=True)
-
         url = "https://lotteryguru.com/austria-lottery-results"
+
         yield scrapy.Request(url=url, callback=self.parse, meta={"proxy": self.req_proxy, "download_timeout":10})
 
     def parse(self, response):
@@ -5583,12 +5583,9 @@ class CanadaLotto649(scrapy.Spider):
             })
 
     def parse(self, response):
-        gold_info = response.xpath('//div[@class="nextJackpotDetails"]//div[@class="nextJackpotDetailsL649gold"]')
+        gold_info = response.xpath('//div[@class="nextJackpotDetails"]//div[@class="nextJackpotDetailsL649gold nextJackpotAd"]')
         self.gold_ball_jackpot = gold_info.xpath('.//div[@class="nextJackpotPrizeAmount"]//text()').get()
         self.gold_ball_jackpot = int(self.gold_ball_jackpot) * 1000000
-        self.gold_ball_remaining = gold_info.xpath('.//div[@class="nextJackpotGuaranteedPrize"]//b//text()').get()
-        gold_ball_info = response.xpath('//div[@id="pastWinNumContent"]//div[@class="pastWinNum"]')
-        self.gold_winner =  gold_ball_info[0].xpath('//div[@class="ballpos"]//text()').get()
         headers = {
             'authority': 'gateway.wma.bedegaming.com',
             'sec-ch-ua': '"Google Chrome";v="89", "Chromium";v="89", ";Not A Brand";v="99"',
@@ -5616,34 +5613,8 @@ class CanadaLotto649(scrapy.Spider):
         balls_lst = [i.strip() for i in latest['main']['regular'].split(',')]
 
         LottoItem.add_value("name", self.name)
-        LottoItem.add_value("ball0", str(balls_lst[0]))
-        LottoItem.add_value("ball1", str(balls_lst[1]))
-        LottoItem.add_value("ball2", str(balls_lst[2]))
-        LottoItem.add_value("ball3", str(balls_lst[3]))
-        LottoItem.add_value("ball4", str(balls_lst[4]))
-        LottoItem.add_value("ball5", str(balls_lst[5]))
-        LottoItem.add_value("bonus_ball", str(latest['main']['bonus']))
         LottoItem.add_value("draw_datetime", latest['date'])
-        LottoItem.add_value("estimated_next_jackpot_balls_left", self.gold_ball_remaining)
         LottoItem.add_value("estimated_next_jackpot", str(self.gold_ball_jackpot))
-        LottoItem.add_value("cat_2_prize", latest['main']['prizeShares']['prize'][0]['amount'])
-        LottoItem.add_value("cat_3_prize", latest['main']['prizeShares']['prize'][1]['amount'])
-        LottoItem.add_value("cat_4_prize", latest['main']['prizeShares']['prize'][2]['amount'])
-        LottoItem.add_value("cat_5_prize", latest['main']['prizeShares']['prize'][3]['amount'])
-        LottoItem.add_value("cat_6_prize", latest['main']['prizeShares']['prize'][4]['amount'])
-        LottoItem.add_value("cat_7_prize", latest['main']['prizeShares']['prize'][5]['amount'])
-        LottoItem.add_value("cat_8_prize", '3') # prize is free ticket
-        if self.gold_winner == 'Gold':
-            LottoItem.add_value("cat_1_winners", str('1'))
-        else:
-            LottoItem.add_value("cat_1_winners", str('0'))
-        LottoItem.add_value("cat_2_winners", str(latest['main']['prizeShares']['prize'][0]['winningTickets']))
-        LottoItem.add_value("cat_3_winners", str(latest['main']['prizeShares']['prize'][1]['winningTickets']))
-        LottoItem.add_value("cat_4_winners", str(latest['main']['prizeShares']['prize'][2]['winningTickets']))
-        LottoItem.add_value("cat_5_winners", str(latest['main']['prizeShares']['prize'][3]['winningTickets']))
-        LottoItem.add_value("cat_6_winners", str(latest['main']['prizeShares']['prize'][4]['winningTickets']))
-        LottoItem.add_value("cat_7_winners", str(latest['main']['prizeShares']['prize'][5]['winningTickets']))
-        LottoItem.add_value("cat_8_winners", str(latest['main']['prizeShares']['prize'][6]['winningTickets']))
         yield LottoItem.load_item()
 
 
@@ -7320,86 +7291,19 @@ class Germany6aus49(scrapy.Spider):
         self.req_proxy = get_UK_proxy()['http']
         print(f"RUNNING: {self.name}, {self.req_proxy}", flush=True)
 
-        #url = "https://www.lotto.de/lotto-6aus49/lottozahlen"
-        url = "https://www.lotto-hessen.de/lotto6aus49/gewinnzahlen-quoten/quoten?gbn=5"
+
+        url = "https://lotteryguru.com/germany-lottery-results"
         yield scrapy.Request(url=url, callback=self.parse, meta={"proxy": self.req_proxy, "download_timeout":10})
 
     def parse(self, response):
-        #self.sales = "".join(response.xpath('//div[@class="OddsTableContainer"]//div[@class="GameAmount"]')[0].xpath('./text()').getall())
-        self.sales = "".join(response.xpath('//div[@class="mm"]//div[@class="quoten-head"]/p/strong/text()').get()).encode('utf-8').decode('utf-8')
-        self.hessen_sales = "".join(response.xpath('//div[@class="mm"]//div[@class="quoten-head"]')[0].xpath('./p/text()').getall()).encode('utf-8').decode('utf-8')
-        rows = response.xpath('//div[@class="quoten-wrapper"]//tbody/tr')
-        self.hessen_cat_1_winners = "".join(rows[0].xpath('./td')[3].xpath('./text()').getall())
-        self.hessen_cat_2_winners = "".join(rows[1].xpath('./td')[3].xpath('./text()').getall())
-        self.hessen_cat_3_winners = "".join(rows[2].xpath('./td')[3].xpath('./text()').getall())
-        self.hessen_cat_4_winners = "".join(rows[3].xpath('./td')[3].xpath('./text()').getall())
-        self.hessen_cat_5_winners = "".join(rows[4].xpath('./td')[3].xpath('./text()').getall())
-        self.hessen_cat_6_winners = "".join(rows[5].xpath('./td')[3].xpath('./text()').getall())
-        self.hessen_cat_7_winners = "".join(rows[6].xpath('./td')[3].xpath('./text()').getall())
-        self.hessen_cat_8_winners = "".join(rows[7].xpath('./td')[3].xpath('./text()').getall())
-        self.hessen_cat_9_winners = "".join(rows[8].xpath('./td')[3].xpath('./text()').getall())
-        url = "https://www.lotto.net/german-lotto/results"
-        yield scrapy.Request(url=url, callback=self.parse_jackpot, meta={"proxy": self.req_proxy, "download_timeout":10})
-
-    def parse_jackpot(self, response):
-        self.next_jackpot = response.xpath('//div[@class="jackpot"]//span/text()').getall()[1].strip()
-        self.draw_date = response.xpath('//div[@class="date"]/span/text()').get().strip()
-        next_page = response.xpath("//div[@class='results-big']/div[@class='row-3']/a/@href").get()
-        url = urljoin(response.url, next_page)
-        yield scrapy.Request(url, callback=self.parse_draw, meta={"proxy": self.req_proxy, "download_timeout":10})
-
-    async def parse_draw(self, response):
+        rows = response.xpath('//div[@class="lg-card lg-link"]')
+        next_jackpot = rows[1].xpath('.//div[@class="lg-card-row lg-jackpot-info"]//div[@class="lg-sum"]//text()').get()
+        draw_date = rows[1].xpath('.//div[@class="lg-card-row"]//div[@class="lg-time"]//span[@class="lg-date"]//text()').get()
+        
         LottoItem = ItemLoader(item=Germany6aus49Item(), selector=response)
-        balls_lst = response.xpath('//ul[@class="balls"]/li/span/text()').getall()
-        rows = response.xpath('//table//tr')
-
         LottoItem.add_value("name", self.name)
-        LottoItem.add_value("ball0", balls_lst[0])
-        LottoItem.add_value("ball1", balls_lst[1])
-        LottoItem.add_value("ball2", balls_lst[2])
-        LottoItem.add_value("ball3", balls_lst[3])
-        LottoItem.add_value("ball4", balls_lst[4])
-        LottoItem.add_value("ball5", balls_lst[5])
-        LottoItem.add_value("bonus_ball", balls_lst[6])
-        LottoItem.add_value("draw_datetime", datetime.strptime(self.draw_date, "%d %B %Y").strftime("%Y-%m-%d"))
-        LottoItem.add_value("sales", self.sales)
-        LottoItem.add_value("hessen_sales", self.hessen_sales)
-        LottoItem.add_value("estimated_next_jackpot", self.next_jackpot)
-        LottoItem.add_value("cat_1_prize", rows[1].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_2_prize", rows[2].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_3_prize", rows[3].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_4_prize", rows[4].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_5_prize", rows[5].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_6_prize", rows[6].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_7_prize", rows[7].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_8_prize", rows[8].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_9_prize", rows[9].xpath('./td[@align="right"]/text()').get().strip())
-        LottoItem.add_value("cat_1_winners", rows[1].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_2_winners", rows[2].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_3_winners", rows[3].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_4_winners", rows[4].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_5_winners", rows[5].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_6_winners", rows[6].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_7_winners", rows[7].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_8_winners", rows[8].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("cat_9_winners", rows[9].xpath('./td/text()').getall()[-1].strip())
-        LottoItem.add_value("hessen_cat_1_winners",  self.hessen_cat_1_winners)
-        LottoItem.add_value("hessen_cat_2_winners",  self.hessen_cat_2_winners)
-        LottoItem.add_value("hessen_cat_3_winners",  self.hessen_cat_3_winners)
-        LottoItem.add_value("hessen_cat_4_winners",  self.hessen_cat_4_winners)
-        LottoItem.add_value("hessen_cat_5_winners",  self.hessen_cat_5_winners)
-        LottoItem.add_value("hessen_cat_6_winners",  self.hessen_cat_6_winners)
-        LottoItem.add_value("hessen_cat_7_winners",  self.hessen_cat_7_winners)
-        LottoItem.add_value("hessen_cat_8_winners",  self.hessen_cat_8_winners)
-        LottoItem.add_value("hessen_cat_9_winners",  self.hessen_cat_9_winners)
-        try:
-            rolldown_check = rows[1].xpath('./td[@align="right"]/span/text()').getall()[-1].lower()
-            if "rolldown" in rolldown_check:
-                LottoItem.add_value("rolldown", "yes")
-            else:
-                LottoItem.add_value("rolldown", "no")
-        except:
-            LottoItem.add_value("rolldown", "no")
+        LottoItem.add_value("draw_datetime", datetime.strptime(draw_date, "%d %b %Y").strftime("%Y-%m-%d"))
+        LottoItem.add_value("estimated_next_jackpot", next_jackpot)
         yield LottoItem.load_item()
 
 

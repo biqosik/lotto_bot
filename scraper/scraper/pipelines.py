@@ -9,6 +9,7 @@ from itemadapter import ItemAdapter
 from word2number import w2n
 from asgiref.sync import sync_to_async
 from bot.models import Scraper
+import time
 
 class ScraperPipeline(object):
     @sync_to_async
@@ -18,6 +19,7 @@ class ScraperPipeline(object):
             product = Scraper.objects.get(name=item['name'])      
             instance = item.save(commit=False)
             instance.pk = product.pk
+            time.sleep(2)
             try:
                 a = (product.estimated_next_jackpot)
                 b = (item['estimated_next_jackpot'])
@@ -40,4 +42,5 @@ class ScraperPipeline(object):
                 item.save()            
         except:
             item.save()
+        time.sleep(1)
         return item

@@ -12,6 +12,7 @@ from .scheduler import scheduler
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+import time
 
 # Create your views here.
 
@@ -35,16 +36,18 @@ def login_user(request):
 def get_scraper(form, get_time, interval):
     script_path = os.path.join(settings.BASE_DIR, 'manage.py')
     subprocess.call([sys.executable, script_path, 'crawl', form])
+    time.sleep(2)
     try:
         model = Scraper.objects.get(name=form)
         model.scheduler = get_time
         model.run_every = interval
+        time.sleep(10)
         model.save()
+        time.sleep(10)
         if model.ticked_option == 'True':
             slackbot(model, True)
             model.ticked_option = 'False'
             model.scheduler = None
-            model.save()
         else:
             slackbot(model, False)
         scheduler.start()
